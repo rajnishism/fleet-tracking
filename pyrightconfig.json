@@ -1,0 +1,11 @@
+{
+  "executionEnvironments": [
+    {
+      "root": "edge",
+      "extraPaths": ["."]
+    }
+  ],
+  "extraPaths": [
+    "edge"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+    "vehicle": {
+        "vehicle_id": "Truck_1",
+        "type": "haul_truck",
+        "gps_port": "/dev/ttyUSB0",
+        "fuel_capacity_liters": 500,
+        "max_payload_tonnes": 50,
+        "scenario": "normal"
+    }
+}
