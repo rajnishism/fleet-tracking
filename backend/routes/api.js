@@ -34,17 +34,6 @@ router.post("/gps", async (req, res) => {
         }
 
         let elevation = 0;
-        try {
-            const response = await fetch(`https://api.open-elevation.com/api/v1/lookup?locations=${latitude},${longitude}`);
-            if (response.ok) {
-                const data = await response.json();
-                if (data.results && data.results.length > 0) {
-                    elevation = data.results[0].elevation || 0;
-                }
-            }
-        } catch (error) {
-            console.error("[POST /api/gps] Elevation fetch error:", error.message);
-        }
 
         const power = req.body.power;
         const vMax = req.body.vMax;
