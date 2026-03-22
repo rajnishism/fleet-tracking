@@ -11,6 +11,8 @@ model Vehicle {
   id        String     @id @default(cuid())
   vehicleId String     @unique
   name      String?
+  power     Float?     // Engine power in kW
+  vMax      Float?     // Maximum speed in km/h
   createdAt DateTime   @default(now())
   locations Location[]
   alerts    Alert[]

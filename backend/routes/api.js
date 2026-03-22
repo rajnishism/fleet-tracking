@@ -46,11 +46,22 @@ router.post("/gps", async (req, res) => {
             console.error("[POST /api/gps] Elevation fetch error:", error.message);
         }
 
+        const power = req.body.power;
+        const vMax = req.body.vMax;
+
         // Upsert vehicle record
         await prisma.vehicle.upsert({
             where: { vehicleId: vehicle_id },
-            update: {},
-            create: { vehicleId: vehicle_id, name: vehicle_id },
+            update: {
+                ...(power !== undefined && { power }),
+                ...(vMax !== undefined && { vMax }),
+            },
+            create: { 
+                vehicleId: vehicle_id, 
+                name: vehicle_id,
+                power: power || null,
+                vMax: vMax || null 
+            },
         });
 
         // Store location
@@ -125,12 +136,20 @@ router.get("/vehicles", async (_req, res) => {
 // ─── POST /api/vehicles ────────────────────────────────────────────────────────
 router.post("/vehicles", async (req, res) => {
     try {
-        const { vehicleId, name } = req.body;
+        const { vehicleId, name, power, vMax } = req.body;
         if (!vehicleId) return res.status(400).json({ error: "Missing vehicleId" });
         const vehicle = await prisma.vehicle.upsert({
             where: { vehicleId },
-            update: {},
-            create: { vehicleId, name: name || vehicleId },
+            update: {
+                ...(power !== undefined && { power }),
+                ...(vMax !== undefined && { vMax }),
+            },
+            create: { 
+                vehicleId, 
+                name: name || vehicleId,
+                power: power || null,
+                vMax: vMax || null
+            },
         });
         return res.json({ success: true, vehicle });
     } catch (err) {

@@ -20,18 +20,28 @@ SPEED_HISTORY_WINDOW = _config.get("speed_history_window", 20)
 SPEED_VARIANCE_THRESHOLD = _config.get("speed_variance_threshold", 200)
 
 
-def calculate_fuel_usage(speed_kmh: float, duration_sec: float) -> float:
+from processing.load_factor import compute_load_factor, compute_fuel_rate
+
+def calculate_fuel_usage(
+    speed_kmh: float, 
+    duration_sec: float,
+    vmax: float = 80.0,
+    is_loaded: int = 1,
+    slope: int = 0,
+    engine_power_kw: float = 500.0
+) -> float:
     """
     Estimate fuel consumption in liters for a given speed and duration.
+    Uses the physics-based load factor model to calculate fuel rate.
     
-    Simplified model:
-    - Idle: 2.0 L/h
-    - Moving: 10.0 + (speed / 10) L/h (dummy linear model for haul trucks)
+    - Idle (speed < 2.0 km/h): 2.0 L/h
+    - Moving: Uses load factor * engine_power * specific_fuel_consumption L/h
     """
     if speed_kmh < 2.0:  # Roughly idle
         consumption_rate_lph = 2.0
     else:
-        consumption_rate_lph = 10.0 + (speed_kmh / 5.0)
+        lf = compute_load_factor(speed_kmh, vmax, is_loaded, slope)
+        consumption_rate_lph = compute_fuel_rate(engine_power_kw, lf)
     
     # L/h to L/sec
     consumption_rate_lps = consumption_rate_lph / 3600.0

@@ -1,6 +1,6 @@
 // MapView.jsx – Leaflet + OpenStreetMap real-time map component
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -31,13 +31,10 @@ const HAUL_ROAD = [
     [22.57819606891107, 88.36755331070492],
     [22.577769829475486, 88.36939963868906],
     [22.578926645333794, 88.36959735525585]
-
-
 ];
 
 const VEHICLE_COLORS = {
     Truck_1: "#3b82f6",
-
 };
 
 function getColor(vehicleId) {
@@ -72,6 +69,7 @@ export default function MapView({ vehicles }) {
     const markersRef = useRef({});
     const pathLinesRef = useRef({});
     const haulRoadRef = useRef(null);
+    const hasInitialCentered = useRef(false);
 
     // Initialize map once
     useEffect(() => {
@@ -173,15 +171,28 @@ export default function MapView({ vehicles }) {
             }
         }
 
-        // Fit bounds to all vehicles
-        const coords = vehicles.filter((v) => v.latitude).map((v) => [v.latitude, v.longitude]);
-        if (coords.length > 0) {
-            map.current.fitBounds(coords, { padding: [80, 80], maxZoom: 15 });
+        // Fit bounds to all vehicles ONLY on first load so user can pan normally afterwards
+        if (!hasInitialCentered.current) {
+            const coords = vehicles.filter((v) => v.latitude).map((v) => [v.latitude, v.longitude]);
+            if (coords.length > 0) {
+                map.current.fitBounds(coords, { padding: [80, 80], maxZoom: 15 });
+                hasInitialCentered.current = true;
+            }
         }
     }, [vehicles]);
 
+    const handleRecenter = () => {
+        if (!map.current) return;
+        const coords = vehicles.filter((v) => v.latitude).map((v) => [v.latitude, v.longitude]);
+        if (coords.length > 0) {
+            map.current.fitBounds(coords, { padding: [80, 80], maxZoom: 15 });
+        } else {
+            map.current.fitBounds(HAUL_ROAD, { padding: [80, 80], maxZoom: 15 });
+        }
+    };
+
     return (
-        <div className="map-container">
+        <div className="map-container" style={{ position: "relative", width: "100%", height: "100%" }}>
             <div ref={mapContainer} style={{ width: "100%", height: "100%" }} />
             <div className="map-legend">
                 <div className="legend-title">Legend</div>
@@ -190,6 +201,37 @@ export default function MapView({ vehicles }) {
                 <div className="legend-item"><div className="legend-dot" style={{ background: "#a855f7" }} />Truck 2</div>
                 <div className="legend-item"><div className="legend-dot" style={{ background: "#ef4444" }} />Alert</div>
             </div>
+            
+            <button 
+                onClick={handleRecenter}
+                style={{
+                    position: "absolute",
+                    bottom: "30px",
+                    right: "30px",
+                    zIndex: 1000,
+                    padding: "10px 16px",
+                    backgroundColor: "#1e293b",
+                    color: "white",
+                    border: "1px solid #334155",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.5)",
+                    fontWeight: "600",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    transition: "all 0.2s"
+                }}
+                onMouseOver={(e) => e.target.style.backgroundColor = '#334155'}
+                onMouseOut={(e) => e.target.style.backgroundColor = '#1e293b'}
+            >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                Recenter
+            </button>
         </div>
     );
 }

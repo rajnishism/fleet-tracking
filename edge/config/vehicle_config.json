@@ -5,6 +5,8 @@
         "gps_port": "/dev/ttyUSB0",
         "fuel_capacity_liters": 500,
         "max_payload_tonnes": 50,
-        "scenario": "normal"
+        "scenario": "mixed",
+        "vmax": 70,
+        "engine_power_kw": 500
     }
 }

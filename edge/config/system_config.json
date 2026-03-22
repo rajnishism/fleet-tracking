@@ -1,7 +1,7 @@
 {
     "deviation_threshold_m": 10.0,
-    "idle_speed_kmh": 2.0,
-    "idle_threshold_sec": 300,
+    "idle_speed_kmh": 1.0,
+    "idle_threshold_sec": 10,
     "fuel_stop_start_limit": 5,
     "speed_history_window": 20,
     "speed_variance_threshold": 200,
