@@ -144,7 +144,7 @@ python3 main.py --mode hardware
 | Alert | Trigger |
 |-------|---------|
 | `ROUTE_DEVIATION` | Vehicle > 50m from defined haul road |
-| `IDLE` | Speed ≈ 0 for > 5 minutes |
+| `IDLE` | Speed ≈ 0 for > 1 minutes |
 | `FUEL_ANOMALY` | Erratic speed variance or repeated stop/starts |
 
 > All thresholds are configurable in `edge/config/system_config.json`.
